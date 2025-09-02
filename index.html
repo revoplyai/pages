@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RevoPlyAi - منصة الردود الذكية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            direction: rtl;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem 0;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin: 0.5rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            color: #555;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+            color: #667eea;
+            border-right-color: #667eea;
+        }
+
+        .nav-icon {
+            margin-left: 1rem;
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .page {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .page-title {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Knowledge Base */
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            background: rgba(102, 126, 234, 0.05);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+        }
+
+        .knowledge-list {
+            margin-top: 2rem;
+        }
+
+        .knowledge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .knowledge-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 70vh;
+        }
+
+        .chat-messages {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.ai .message-bubble {
+            background: white;
+            border: 1px solid #e1e5e9;
+            color: #333;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+        }
+
+        .status-active {
+            background: #28a745;
+        }
+
+        .status-inactive {
+            background: #dc3545;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem 0;
+            }
+
+            .nav-link {
+                padding: 0.8rem 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <h1>RevoPlyAi</h1>
+                <p>منصة الردود الذكية</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-page="dashboard">
+                        <span class="nav-icon">🏠</span>
+                        الرئيسية
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="settings">
+                        <span class="nav-icon">⚙️</span>
+                        الإعدادات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="knowledge">
+                        <span class="nav-icon">📚</span>
+                        قاعدة المعرفة
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="test">
+                        <span class="nav-icon">🧪</span>
+                        صفحة الاختبار
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="page-header">
+                    <h1 class="page-title">لوحة التحكم</h1>
+                    <div style="color: #666;">أهلاً بك في RevoPlyAi</div>
+                </div>
+
+                <!-- Profile Section -->
+                <div class="profile-section">
+                    <div class="profile-avatar">👤</div>
+                    <h3>أحمد محمد</h3>
+                    <p>مدير النظام</p>
+                    <p>آخر دخول: منذ 5 دقائق</p>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">1,247</div>
+                        <div class="stat-label">الرسائل المستلمة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">1,189</div>
+                        <div class="stat-label">الردود المرسلة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">52,847</div>
+                        <div class="stat-label">استهلاك التوكن</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">95.3%</div>
+                        <div class="stat-label">معدل الاستجابة</div>
+                    </div>
+                </div>
+
+                <!-- Knowledge Base Status -->
+                <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">حالة قاعدة المعرفة</h3>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span>الحالة:</span>
+                        <span class="status-indicator status-active"></span>
+                        <span style="color: #28a745; font-weight: 600;">نشطة</span>
+                        <span style="margin-right: 2rem;">المستندات: 24</span>
+                        <a href="#" onclick="showPage('knowledge')" style="color: #667eea;">إدارة المحتوى →</a>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="showPage('test')">
+                        🧪 اختبار الذكاء الاصطناعي
+                    </button>
+                    <button class="action-btn" onclick="showPage('knowledge')">
+                        📚 إضافة محتوى جديد
+                    </button>
+                    <button class="action-btn" onclick="showPage('settings')">
+                        ⚙️ إعدادات النظام
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settings" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">الإعدادات</h1>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+                    <!-- Language Settings -->
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 12px;">
+                        <h3 style="margin-bottom: 1.5rem;">إعدادات اللغة</h3>
+                        <div class="form-group">
+                            <label class="form-label">اللغة الافتراضية</label>
+                            <select class="form-select">
+                                <option value="ar" selected>العربية</option>
+                                <option value="en">English</option>
+                                <option value="fr">Français</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">لغات الاستجابة المدعومة</label>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+                                <label><input type="checkbox" checked> العربية</label>
+                                <label><input type="checkbox" checked> الإنجليزية</label>
+                                <label><input type="checkbox"> الفرنسية</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Behavior -->
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 12px;">
+                        <h3 style="margin-bottom: 1.5rem;">سلوك الذكاء الاصطناعي</h3>
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label class="form-label">تفعيل الردود التلقائية</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">الحد الأقصى للتوكن لكل رسالة</label>
+                            <input type="number" class="form-input" value="500" min="100" max="2000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">نمط الاستجابة</label>
+                            <select class="form-select">
+                                <option value="formal">رسمي</option>
+                                <option value="friendly" selected>ودود</option>
+                                <option value="professional">مهني</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div style="background: #f8f9fa; padding: 2rem; border-radius: 12px; margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1.5rem;">إعدادات الإشعارات</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label class="form-label">إشعارات الرسائل الجديدة</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label class="form-label">تقارير الاستخدام اليومية</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="action-btn">💾 حفظ الإعدادات</button>
+                </div>
+            </div>
+
+            <!-- Knowledge Base Page -->
+            <div id="knowledge" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">قاعدة المعرفة</h1>
+                    <button class="action-btn">+ إضافة محتوى جديد</button>
+                </div>
+
+                <!-- Upload Area -->
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" style="display: none;" accept=".pdf,.txt,.docx" multiple>
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                    <h3>رفع المستندات</h3>
+                    <p>اسحب واسقط ملفات PDF أو انقر للتحديد</p>
+                    <small style="color: #666;">الصيغ المدعومة: PDF, TXT, DOCX (حد أقصى 10 ميجابايت)</small>
+                </div>
+
+                <!-- Add Links and Text -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px;">
+                        <h4 style="margin-bottom: 1rem;">إضافة رابط</h4>
+                        <input type="url" class="form-input" placeholder="https://example.com" style="margin-bottom: 1rem;">
+                        <button class="action-btn">+ إضافة الرابط</button>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px;">
+                        <h4 style="margin-bottom: 1rem;">إضافة نص حر</h4>
+                        <textarea class="form-textarea" placeholder="أدخل النص هنا..." style="margin-bottom: 1rem;"></textarea>
+                        <button class="action-btn">+ إضافة النص</button>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <input type="search" class="form-input" placeholder="بحث في المحتوى..." style="flex: 1;">
+                    <select class="form-select" style="width: 200px;">
+                        <option>جميع الأنواع</option>
+                        <option>مستندات PDF</option>
+                        <option>روابط</option>
+                        <option>نص حر</option>
+                    </select>
+                </div>
+
+                <!-- Knowledge List -->
+                <div class="knowledge-list">
+                    <h3 style="margin-bottom: 1rem;">المحتوى المحفوظ (24 عنصر)</h3>
+                    
+                    <div class="knowledge-item">
+                        <div>
+                            <div style="font-weight: 600;">📄 دليل خدمة العملاء.pdf</div>
+                            <small style="color: #666;">تم الرفع منذ يومين • حجم: 2.5 ميجابايت</small>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn-sm btn-edit">تعديل</button>
+                            <button class="btn-sm btn-delete">حذف</button>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-item">
+                        <div>
+                            <div style="font-weight: 600;">🔗 https://company-policies.com</div>
+                            <small style="color: #666;">تم الإضافة منذ 3 أيام</small>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn-sm btn-edit">تعديل</button>
+                            <button class="btn-sm btn-delete">حذف</button>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-item">
+                        <div>
+                            <div style="font-weight: 600;">📝 الأسئلة الشائعة</div>
+                            <small style="color: #666;">نص حر • تم التحديث منذ أسبوع</small>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn-sm btn-edit">تعديل</button>
+                            <button class="btn-sm btn-delete">حذف</button>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-item">
+                        <div>
+                            <div style="font-weight: 600;">📄 سياسة الخصوصية.pdf</div>
+                            <small style="color: #666;">تم الرفع منذ أسبوعين • حجم: 1.8 ميجابايت</small>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn-sm btn-edit">تعديل</button>
+                            <button class="btn-sm btn-delete">حذف</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Page -->
+            <div id="test" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">صفحة الاختبار</h1>
+                    <div style="color: #666;">اختبر أداء الذكاء الاصطناعي</div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai">
+                            <div class="message-bubble">
+                                مرحباً! أنا مساعدك الذكي. كيف يمكنني مساعدتك اليوم؟
+                            </div>
+                        </div>
+                        
+                        <div class="message user">
+                            <div class="message-bubble">
+                                ما هي ساعات عمل الشركة؟
+                            </div>
+                        </div>
+                        
+                        <div class="message ai">
+                            <div class="message-bubble">
+                                ساعات عمل الشركة هي من السبت إلى الخميس من الساعة 9:00 صباحاً حتى 6:00 مساءً. نحن مغلقون أيام الجمعة والأعياد الرسمية. هل تحتاج لمعلومات إضافية؟
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="messageInput" placeholder="اكتب رسالتك هنا...">
+                        <button class="send-btn" onclick="sendMessage()">إرسال</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; text-align: center; color: #666;">
+                    <small>💡 نصيحة: جرب أسئلة مختلفة لاختبار قدرة النظام على الفهم والاستجابة</small>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navigation functionality
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Add active class to corresponding nav link
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+        }
+
+        // Navigation event listeners
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.innerHTML = `<div class="message-bubble">${message}</div>`;
+            chatMessages.appendChild(userMessage);
+            
+            // Clear input
+            input.value = '';
+            
+            // Simulate AI typing
+            setTimeout(() => {
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message ai';
+                aiMessage.innerHTML = `<div class="message-bubble">شكراً لك على سؤالك: "${message}". هذا مثال على رد الذكاء الاصطناعي. في النظام الحقيقي، سيتم معالجة سؤالك بناءً على المحتوى المحفوظ في قاعدة المعرفة.</div>`;
+                chatMessages.appendChild(aiMessage);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Enter key to send message
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // File upload simulation
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                alert(`تم تحديد ${files.length} ملف(ات). في النظام الحقيقي، سيتم رفعها ومعالجتها.`);
+            }
+        });
+
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.backgroundColor = 'rgba(102, 126, 234, 0.15)';
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.backgroundColor = 'rgba(102, 126, 234, 0.05)';
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.backgroundColor = 'rgba(102, 126, 234, 0.05)';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                alert(`تم إسقاط ${files.length} ملف(ات). في النظام الحقيقي، سيتم رفعها ومعالجتها.`);
+            }
+        });
+
+        // Settings form interactions
+        document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                console.log(`تم ${this.checked ? 'تفعيل' : 'إلغاء تفعيل'} الخيار`);
+            });
+        });
+
+        // Knowledge base actions
+        document.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', function() {
+                alert('سيتم فتح نافذة التعديل');
+            });
+        });
+
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
+                    this.closest('.knowledge-item').remove();
+                }
+            });
+        });
+
+        // Quick action buttons functionality
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            if (!btn.hasAttribute('onclick')) {
+                btn.addEventListener('click', function() {
+                    const text = this.textContent.trim();
+                    if (text.includes('حفظ الإعدادات')) {
+                        alert('تم حفظ الإعدادات بنجاح!');
+                    } else if (text.includes('إضافة محتوى')) {
+                        showPage('knowledge');
+                    } else if (text.includes('إعدادات النظام')) {
+                        showPage('settings');
+                    }
+                });
+            }
+        });
+
+        // Search functionality
+        const searchInputs = document.querySelectorAll('input[type="search"]');
+        searchInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const items = document.querySelectorAll('.knowledge-item');
+                
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Add some animation effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate stats on dashboard load
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach((stat, index) => {
+                setTimeout(() => {
+                    stat.style.animation = 'fadeIn 0.6s ease-out forwards';
+                }, index * 100);
+            });
+        });
+
+        // Mobile responsive behavior
+        function handleResize() {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').style.position = 'fixed';
+                document.querySelector('.sidebar').style.bottom = '0';
+                document.querySelector('.sidebar').style.width = '100%';
+                document.querySelector('.sidebar').style.height = 'auto';
+                document.querySelector('.sidebar').style.zIndex = '1000';
+            } else {
+                document.querySelector('.sidebar').style.position = 'static';
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Call on load
+    </script>
+</body>
+</html>
