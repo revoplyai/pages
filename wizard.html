@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معالج إعداد دعم Revoply AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .wizard-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 6px;
+            margin-top: 20px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #10b981;
+            height: 100%;
+            width: 16.66%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .step.active {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        .step.completed {
+            color: #10b981;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .step.active .step-number {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            direction: rtl;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: #4f46e5;
+            background: #f8fafc;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #4f46e5;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            color: #92400e;
+        }
+
+        .warning-icon {
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        .test-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 16px;
+        }
+
+        .test-button:hover {
+            background: #059669;
+        }
+
+        .payment-summary {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .price-total {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 12px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #10b981;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .summary-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-title {
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            color: #10b981;
+            margin-bottom: 24px;
+        }
+
+        .success-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 30px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+        }
+
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .skip-link {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .skip-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="wizard-container">
+        <div class="header">
+            <div class="logo">🤖 Revoply AI</div>
+            <div class="subtitle">معالج إعداد مساعد الدعم الذكي</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step active" data-step="1">
+                <div class="step-number">1</div>
+                <span>الترحيب</span>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <span>المعرفة</span>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <span>الحدود</span>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-number">4</div>
+                <span>تيليجرام</span>
+            </div>
+            <div class="step" data-step="5">
+                <div class="step-number">5</div>
+                <span>الدفع</span>
+            </div>
+            <div class="step" data-step="6">
+                <div class="step-number">6</div>
+                <span>الإنهاء</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Step 1: Welcome & Context -->
+            <div class="step-content active" id="step1">
+                <h2 class="step-title">مرحباً بك! 👋</h2>
+                <p class="step-description">
+                    دعنا نقوم بإعداد مساعد الدعم الذكي لشركتك. ستستغرق هذه العملية حوالي 5 دقائق.
+                </p>
+                
+                <div class="form-group">
+                    <label class="form-label">ما هو اسم شركتك؟ *</label>
+                    <input type="text" class="form-input" placeholder="اسم الشركة" id="companyName" required>
+                </div>
+            </div>
+
+            <!-- Step 2: Business Knowledge Collection -->
+            <div class="step-content" id="step2">
+                <h2 class="step-title">جمع معرفة العمل 📚</h2>
+                <p class="step-description">
+                    ارفع أو الصق قاعدة المعرفة الموجودة لديك (الأسئلة الشائعة، وثائق المنتج، أوراق الأسعار).
+                </p>
+                
+                <div class="form-group">
+                    <label class="form-label">رفع الملفات</label>
+                    <div class="upload-area">
+                        <div class="upload-icon">📄</div>
+                        <p>اسحب وأفلت الملفات هنا أو انقر لاختيار الملفات</p>
+                        <p style="font-size: 14px; color: #9ca3af; margin-top: 8px;">PDF, DOC, TXT مدعوم</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">هل تعرف أهم 3 أسئلة يطرحها العملاء؟ يمكنك إدراج بعضها والإجابات عليها؟</label>
+                    <textarea class="form-input form-textarea" placeholder="مثال:&#10;س: ما هي ساعات العمل؟&#10;ج: نعمل من الأحد إلى الخميس من 9 صباحاً إلى 6 مساءً&#10;&#10;س: كيف يمكنني إلغاء طلبي؟&#10;ج: يمكنك إلغاء طلبك خلال 24 ساعة من الطلب"></textarea>
+                </div>
+            </div>
+
+            <!-- Step 3: Support Boundaries & Tone -->
+            <div class="step-content" id="step3">
+                <h2 class="step-title">حدود الدعم والنبرة 🎯</h2>
+                <p class="step-description">
+                    حدد كيف يجب أن يستجيب المساعد.
+                </p>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="escalateHuman" class="checkbox">
+                        <label for="escalateHuman">يجب على المساعد تصعيد الأمر إلى وكيل بشري؟</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">نبرة الرد</label>
+                    <select class="form-input">
+                        <option>ودود ومهني</option>
+                        <option>رسمي</option>
+                        <option>غير رسمي</option>
+                        <option>تقني</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">متى يجب التصعيد؟</label>
+                    <textarea class="form-input form-textarea" placeholder="مثال: عندما يطلب العميل استرداد أكثر من 500 ريال، أو عند الشكاوى المعقدة التي تتطلب تدخل المدير"></textarea>
+                </div>
+            </div>
+
+            <!-- Step 4: Telegram Integration -->
+            <div class="step-content" id="step4">
+                <h2 class="step-title">تكامل تيليجرام 💬</h2>
+                <p class="step-description">
+                    اربط الذكاء الاصطناعي للرد نيابة عن شركتك في تيليجرام.
+                </p>
+                
+                <div class="form-group">
+                    <label class="form-label">مفتاح API تيليجرام</label>
+                    <input type="text" class="form-input" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz">
+                    <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">
+                        <a href="#" style="color: #4f46e5;">تعليمات الحصول على مفتاح API</a>
+                    </p>
+                </div>
+
+                <button class="test-button">اختبار الاتصال 🧪</button>
+            </div>
+
+            <!-- Step 5: Payment Setup -->
+            <div class="step-content" id="step5">
+                <h2 class="step-title">إعداد الدفع 💳</h2>
+                <p class="step-description">
+                    أدخل معلومات بطاقتك الائتمانية لتفعيل مساعدك.
+                </p>
+                
+                <div class="form-group">
+                    <label class="form-label">رقم البطاقة</label>
+                    <input type="text" class="form-input" placeholder="1234 5678 9012 3456">
+                </div>
+
+                <div style="display: flex; gap: 16px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">تاريخ الانتهاء</label>
+                        <input type="text" class="form-input" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">CVV</label>
+                        <input type="text" class="form-input" placeholder="123">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="freeTrial" class="checkbox" checked>
+                        <label for="freeTrial">هل تريد فترة تجريبية مجانية قبل بدء الفوترة؟</label>
+                    </div>
+                </div>
+
+                <div class="payment-summary">
+                    <h3 style="margin-bottom: 16px; color: #374151;">ملخص الأسعار</h3>
+                    <div class="price-item">
+                        <span>الاشتراك الشهري</span>
+                        <span>299 ريال</span>
+                    </div>
+                    <div class="price-item">
+                        <span>رسوم الرسائل (لكل 1000 رسالة)</span>
+                        <span>50 ريال</span>
+                    </div>
+                    <div class="price-item price-total">
+                        <span>المجموع الشهري المتوقع</span>
+                        <span>349 ريال</span>
+                    </div>
+                </div>
+
+                <div class="security-badge">
+                    <span>🔒</span>
+                    <span>محمي بتشفير SSL - معلوماتك آمنة</span>
+                </div>
+            </div>
+
+            <!-- Step 6: Finalization -->
+            <div class="step-content" id="step6">
+                <h2 class="step-title">ملخص الإعداد 📋</h2>
+                <p class="step-description">
+                    راجع إعداداتك قبل إطلاق مساعدك الذكي.
+                </p>
+
+                <div class="summary-section">
+                    <div class="summary-title">معلومات الشركة</div>
+                    <div class="summary-item">
+                        <span>اسم الشركة</span>
+                        <span id="summaryCompanyName">-</span>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <div class="summary-title">مصادر المعرفة</div>
+                    <div class="summary-item">
+                        <span>الملفات المرفوعة</span>
+                        <span>3 ملفات</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>الأسئلة الشائعة</span>
+                        <span>تم إضافتها</span>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <div class="summary-title">قواعد النبرة والتصعيد</div>
+                    <div class="summary-item">
+                        <span>النبرة</span>
+                        <span>ودود ومهني</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>التصعيد للبشر</span>
+                        <span>مفعل</span>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <div class="summary-title">التكاملات</div>
+                    <div class="summary-item">
+                        <span>تيليجرام</span>
+                        <span style="color: #10b981;">متصل ✓</span>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <div class="summary-title">معلومات الفوترة</div>
+                    <div class="summary-item">
+                        <span>الخطة</span>
+                        <span>أساسية - 299 ريال/شهر</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>الفترة التجريبية</span>
+                        <span>7 أيام مجانية</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="step-content" id="step7">
+                <div class="success-message">
+                    <div class="success-icon">🎉</div>
+                    <h2 class="success-title">مساعدك الذكي جاهز للرد!</h2>
+                    <p class="step-description">
+                        تم إعداد مساعد الدعم الذكي بنجاح. يمكنه الآن البدء في الرد على استفسارات عملائك.
+                    </p>
+                    
+                    <div style="margin: 30px 0;">
+                        <button class="btn btn-primary" style="margin: 0 10px;">دليل البدء السريع</button>
+                        <button class="btn btn-secondary" style="margin: 0 10px;">لوحة التحكم</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <div>
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">السابق</button>
+                <a href="#" class="skip-link" id="skipLink" onclick="showSkipWarning()" style="margin-right: 20px;">تخطي هذه الخطوة</a>
+            </div>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">التالي</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6;
+
+        // Store wizard data
+        const wizardData = {};
+
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const percentage = (currentStep / totalSteps) * 100;
+            progressFill.style.width = percentage + '%';
+        }
+
+        function updateStepIndicator() {
+            const steps = document.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                const stepNumber = index + 1;
+                step.classList.remove('active', 'completed');
+                
+                if (stepNumber === currentStep) {
+                    step.classList.add('active');
+                } else if (stepNumber < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
+        }
+
+        function showStep(stepNumber) {
+            // Hide all step contents
+            const stepContents = document.querySelectorAll('.step-content');
+            stepContents.forEach(content => content.classList.remove('active'));
+            
+            // Show current step
+            document.getElementById('step' + stepNumber).classList.add('active');
+            
+            // Update progress and indicators
+            updateProgress();
+            updateStepIndicator();
+            
+            // Update buttons
+            updateButtons();
+            
+            // Handle special cases
+            if (stepNumber === 7) {
+                document.querySelector('.actions').style.display = 'none';
+            }
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipLink = document.getElementById('skipLink');
+            
+            // Show/hide previous button
+            prevBtn.style.display = currentStep > 1 ? 'block' : 'none';
+            
+            // Update next button text
+            if (currentStep === totalSteps) {
+                nextBtn.textContent = 'إطلاق المساعد 🚀';
+            } else {
+                nextBtn.textContent = 'التالي';
+            }
+            
+            // Show/hide skip link based on step
+            const skippableSteps = [2, 3, 4]; // Steps that can be skipped
+            skipLink.style.display = skippableSteps.includes(currentStep) ? 'inline' : 'none';
+        }
+
+        function nextStep() {
+            // Validate current step
+            if (!validateStep(currentStep)) {
+                return;
+            }
+            
+            // Save step data
+            saveStepData(currentStep);
+            
+            if (currentStep < totalSteps) {
+                currentStep++;
+                showStep(currentStep);
+            } else {
+                // Final step - launch
+                launchAssistant();
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function validateStep(stepNumber) {
+            switch(stepNumber) {
+                case 1:
+                    const companyName = document.getElementById('companyName').value.trim();
+                    if (!companyName) {
+                        alert('يرجى إدخال اسم الشركة');
+                        return false;
+                    }
+                    return true;
+                default:
+                    return true;
+            }
+        }
+
+        function saveStepData(stepNumber) {
+            switch(stepNumber) {
+                case 1:
+                    wizardData.companyName = document.getElementById('companyName').value.trim();
+                    break;
+                // Add other step data saving logic here
+            }
+        }
+
+        function showSkipWarning() {
+            if (currentStep === 2) {
+                const warning = document.createElement('div');
+                warning.className = 'warning-box';
+                warning.innerHTML = '<span class="warning-icon">⚠️</span> تحذير: ستحتاج إلى إضافة قاعدة المعرفة لاحقاً لتحسين أداء المساعد.';
+                
+                const existingWarning = document.querySelector('#step2 .warning-box');
+                if (existingWarning) {
+                    existingWarning.remove();
+                }
+                
+                document.getElementById('step2').appendChild(warning);
+                
+                setTimeout(() => {
+                    nextStep();
+                }, 2000);
+            } else {
+                nextStep();
+            }
+        }
+
+        function launchAssistant() {
+            // Update summary with saved data
+            if (wizardData.companyName) {
+                document.getElementById('summaryCompanyName').textContent = wizardData.companyName;
+            }
+            
+            // Show success step
+            currentStep = 7;
+            showStep(7);
+            
+            // Simulate launch process
+            setTimeout(() => {
+                console.log('AI Assistant launched successfully!');
+            }, 1000);
+        }
+
+        // Initialize wizard
+        document.addEventListener('DOMContentLoaded', function() {
+            showStep(1);
+            
+            // Add some interactive effects
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
